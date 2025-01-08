@@ -5,23 +5,20 @@ const KEY = "99b81557e63a57d5f0defe33";
 export default function App() {
   const [money, setMoney] = useState("");
   const [exchangeRate, setExchangeRate] = useState("");
-  const [unitFrom, setUnitFrom] = useState("VND");
-  const [unitTo, setUnitTo] = useState("USD");
+  const [unitFrom, setUnitFrom] = useState("USD");
+  const [unitTo, setUnitTo] = useState("VND");
 
-  function handleInputFormat(number) {
-    const rawValue = number.target.value.replace(/,/g, "");
-    const formatedValue = new Intl.NumberFormat("en-US").format(rawValue);
-    setMoney(formatedValue);
-  }
+  const rawResult = parseFloat(money.replace(/,/g, "")) * exchangeRate;
+  const formatedResult = new Intl.NumberFormat("en-US").format(rawResult);
 
   return (
     <div className="container">
-      <CurrencyConverter money={money} onMoneyFormat={handleInputFormat} unitFrom={unitFrom} setUnitFrom={setUnitFrom} unitTo={unitTo} setUnitTo={setUnitTo} exchangeRate={exchangeRate} setExchangeRate={setExchangeRate} />
+      <CurrencyConverter money={money} setMoney={setMoney} unitFrom={unitFrom} setUnitFrom={setUnitFrom} unitTo={unitTo} setUnitTo={setUnitTo} exchangeRate={exchangeRate} setExchangeRate={setExchangeRate} rawResult={rawResult} formatedResult={formatedResult} />
     </div>
   );
 }
 
-function CurrencyConverter({ money, onMoneyFormat, unitFrom, setUnitFrom, unitTo, setUnitTo, exchangeRate, setExchangeRate }) {
+function CurrencyConverter({ money, setMoney, unitFrom, setUnitFrom, unitTo, setUnitTo, setExchangeRate, formatedResult }) {
   useEffect(
     function () {
       async function getExchangeRates() {
@@ -30,16 +27,15 @@ function CurrencyConverter({ money, onMoneyFormat, unitFrom, setUnitFrom, unitTo
 
         setExchangeRate(data.conversion_rates[`${unitTo}`]);
       }
-
       getExchangeRates();
     },
-    [unitTo]
+    [money, unitFrom, unitTo]
   );
 
   return (
     <>
       <div className="money">
-        <input type="number" min={0} value={money} onChange={onMoneyFormat} placeholder="Enter amount..." />
+        <input type="text" min={0} value={money} onChange={(e) => setMoney(e.target.value)} placeholder="Enter amount..." />
 
         <select className="unit-from" value={unitFrom} onChange={(e) => setUnitFrom(e.target.value)}>
           <option value="VND">VND</option>
@@ -57,7 +53,7 @@ function CurrencyConverter({ money, onMoneyFormat, unitFrom, setUnitFrom, unitTo
       </div>
 
       <div className="result">
-        <p>Result: {money * exchangeRate}</p>
+        <p>Result: {formatedResult}</p>
       </div>
     </>
   );
