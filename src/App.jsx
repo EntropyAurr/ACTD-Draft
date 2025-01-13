@@ -14,11 +14,12 @@ export default function App() {
   return (
     <div className="container">
       <CurrencyConverter money={money} setMoney={setMoney} unitFrom={unitFrom} setUnitFrom={setUnitFrom} unitTo={unitTo} setUnitTo={setUnitTo} exchangeRate={exchangeRate} setExchangeRate={setExchangeRate} rawResult={rawResult} formatedResult={formatedResult} />
+      <Result money={money} formatedResult={formatedResult} />
     </div>
   );
 }
 
-function CurrencyConverter({ money, setMoney, unitFrom, setUnitFrom, unitTo, setUnitTo, setExchangeRate, formatedResult }) {
+function CurrencyConverter({ money, setMoney, unitFrom, setUnitFrom, unitTo, setUnitTo, setExchangeRate }) {
   useEffect(
     function () {
       async function getExchangeRates() {
@@ -51,10 +52,14 @@ function CurrencyConverter({ money, setMoney, unitFrom, setUnitFrom, unitTo, set
           <option value="EUR">EUR</option>
         </select>
       </div>
-
-      <div className="result">
-        <p>Result: {formatedResult}</p>
-      </div>
     </>
+  );
+}
+
+function Result({ money, formatedResult }) {
+  return (
+    <div className="result">
+      <p>Result: {!money ? (formatedResult = "") : formatedResult}</p>
+    </div>
   );
 }
